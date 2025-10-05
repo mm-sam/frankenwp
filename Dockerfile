@@ -15,6 +15,13 @@ ENV CGO_ENABLED=1 XCADDY_SETCAP=1 XCADDY_GO_BUILD_FLAGS='-ldflags="-w -s" -trimp
 
 COPY ./sidekick/middleware/cache ./cache
 
+# Install Go
+RUN curl -L https://go.dev/dl/go1.25.0.linux-amd64.tar.gz -o go1.25.0.linux-amd64.tar.gz \
+    && rm -rf /usr/local/go \
+    && tar -C /usr/local -xzf go1.25.0.linux-amd64.tar.gz \
+    && rm go1.25.0.linux-amd64.tar.gz \
+    && export PATH=$PATH:/usr/local/go/bin
+
 RUN xcaddy build \
     --output /usr/local/bin/frankenphp \
     --with github.com/dunglas/frankenphp=./ \
@@ -68,6 +75,8 @@ RUN install-php-extensions \
     intl \
     mysqli \
     zip \
+    pdo_mysql \
+    redis \
     # See https://github.com/Imagick/imagick/issues/640#issuecomment-2077206945
     imagick/imagick@master \
     opcache
